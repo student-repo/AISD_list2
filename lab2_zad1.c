@@ -18,6 +18,9 @@ void quicksort(int *a, int p, int r);
 void compareArrays(int *a, int *aa, int n);
 void merge(int *A,int *L,int leftCount,int *R,int rightCount);
 void mergeSort(int *A,int n);
+void resetCounrers();
+double getInsertionSortTime(int *a, int n);
+
 typedef struct Counter{
   int comparisonNumber;
   int swapNumber;
@@ -65,10 +68,17 @@ fp = fopen("test.csv", "w+");
 fprintf(fp, "Data size,Insertionsort time time,Mergesort time,Quicksort time,     ,\n");
 
 for(i = 1; i <= foo; i++){
+  if(arrayType == '1'){
+    a = getRandomArray(i * 100, range);
+  }
+  else{
+    a = getSortedArray(i * 100, range);
+  }
+
   fprintf(fp, "%d,",i * 100);
   aa = copyArray(a, i * 100 );
   start = clock();
-  insertionSort(a, i * 100);
+  insertionSort(aa, i * 100);
   end = clock();
   seconds = (double)(end - start) / CLOCKS_PER_SEC;
   fprintf(fp, "%.10e,",seconds);
@@ -90,21 +100,14 @@ for(i = 1; i <= foo; i++){
   seconds = (double)(end - start) / CLOCKS_PER_SEC;
   fprintf(fp, "%.10e\n",seconds);
   free(aa);
-  // printf("Insertion sort comparison number: %d swap number: %d\n", insertionSortInfo.comparisonNumber, insertionSortInfo.swapNumber );
-  // printf("Merge sort comparison number: %d swap number: %d\n", mergeSortInfo.comparisonNumber, mergeSortInfo.swapNumber );
-  // printf("Quicksort sort comparison number: %d swap number: %d\n", quicksortInfo.comparisonNumber, quicksortInfo.swapNumber );
+  free(a);
   insertionSortCounter[i - 1].comparisonNumber = insertionSortInfo.comparisonNumber;
   insertionSortCounter[i - 1].swapNumber = insertionSortInfo.swapNumber;
   mergeSortCounter[i - 1].comparisonNumber = mergeSortInfo.comparisonNumber;
   mergeSortCounter[i - 1].swapNumber = mergeSortInfo.swapNumber;
   quicksortCounter[i - 1].comparisonNumber = quicksortInfo.comparisonNumber;
   quicksortCounter[i - 1].swapNumber = quicksortInfo.swapNumber;
-  insertionSortInfo.comparisonNumber = 0;
-  insertionSortInfo.swapNumber = 0;
-  mergeSortInfo.comparisonNumber = 0;
-  mergeSortInfo.swapNumber = 0;
-  quicksortInfo.comparisonNumber = 0;
-  quicksortInfo.swapNumber = 0;
+  resetCounrers();
 }
 
 // start = clock();
@@ -167,130 +170,10 @@ int *insertionSort(int *a, int n){
     return a;
 }
 
-void merge2(int *a, int p, int q, int r){
-  int n1 = q - p + 1, n2 = r - q, *ll, *rr, i, j, k;
-  ll = malloc((n1 + 1) * sizeof(int));
-  rr = malloc((n2 + 1) * sizeof(int));
-
-  for(i = 1; i <= n1; i++){
-    ll[i - 1] = a[p + i - 1];
-  }
-  for(i = 1; i <= n1; i++){
-      rr[i - 1] = a[q + i];
-  }
-  ll[n1] = INT_MAX;
-  rr[n2] = INT_MAX;
-
-  i = 0;
-  j = 0;
-
-  for(k = p; k <= r; k++){
-    if(ll[i] < rr[j]){
-      a[k] = ll[i];
-      i++;
-    }
-    else{
-      a[k] = rr[j];
-      j++;
-    }
-    mergeSortInfo.comparisonNumber++;
-    mergeSortInfo.swapNumber++;
-  }
-
-}
-
-  void mergeSort2(int *a, int p, int r){
-    int q;
-    if(p < r){
-      q = (int)((p + r) / 2);
-    mergeSort2(a, p, q);
-    mergeSort2(a, q + 1, r);
-    merge2(a, p, q, r);
-  }
-}
-
-void quicksort2(int *a, int p, int r){
-  int q;
-  if(p < r){
-    q = partition(a, p, r);
-    quicksort(a, p, q - 1);
-    quicksort(a, q + 1, r);
-  }
-}
-
-int partition(int *a, int p, int r){
-  int x = a[r], i = p - 1, j, buffor;
-  for(j = p; j <= r - 1; j++){
-    quicksortInfo.comparisonNumber++;
-    if(a[j] <= x){
-      i = i + 1;
-      swap(a, i, j);
-      quicksortInfo.swapNumber += 2;
-    }
-  }
-  swap(a, i + 1, r);
-  quicksortInfo.swapNumber += 2;
-  return i + 1;
-}
-
 void swap(int *A, int i, int j) {
    int tmp = A[i]; A[i] = A[j]; A[j] = tmp;
 }
 
-int *getRandomArray(int n, int range){
-  int *a, r, k, i;
-  a = malloc(n * sizeof(int));
-  srand(time(NULL));
-  for(i = 0; i < n; i++){
-    r = rand() % range;
-    k = rand() % 2;
-    if(k == 1){
-      r*=( -1);
-    }
-    a[i] = r;
-}
-return a;
-}
-
-int *getSortedArray(int n, int range){
-  int *a, i, j;
-  a = getRandomArray(n, range);
-  quicksort(a, 0, n - 1);
-  reverseArray(a, n);
-  quicksortInfo.comparisonNumber = 0;
-  quicksortInfo.swapNumber = 0;
-  return a;
-}
-
-void reverseArray(int *a, int n){
-  int i, j;
-  i = n - 1;
-  j = 0;
-  while(i > j){
-    swap(a, i, j);
-    i--;
-    j++;
-  }
-}
-
-void displayArray(int *a, int n){
-  int i;
-  printf("[");
-  for(i = 0; i < n; i++){
-    printf("%d", a[i]);
-    printf(",");
-  }
-  printf("]\n" );
-}
-
-int *copyArray(int *a, int n){
-  int *aa, i;
-  aa = malloc((n + 1) * sizeof(int));
-  for(i = 0; i < n; i++){
-    aa[i] = a[i];
-  }
-  return aa;
-}
 
 
 void quicksort(int *a, int p, int r){
@@ -316,22 +199,7 @@ void quicksort(int *a, int p, int r){
     if (i<r) quicksort(a, i, r);
   }
 
-  void compareArrays(int *a, int *aa, int n){
-    int i;
-    for(i = 0; i < n; i++){
-      if(a[i] != aa[i]){
-        printf("NOT THE SAME !!!\n");
-        printf("NOT THE SAME !!!\n");
-        printf("NOT THE SAME !!!\n");
-        break;
-      }
-    }
-    // displayArray(a, n);
-    // displayArray(aa, n);
-    printf("TABLES ARE THE SAME !!!\n" );
-    printf("TABLES ARE THE SAME !!!\n" );
-    printf("TABLES ARE THE SAME !!!\n" );
-  }
+
 
   void merge(int *A,int *L,int leftCount,int *R,int rightCount) {
   	int i,j,k;
@@ -344,6 +212,8 @@ void quicksort(int *a, int p, int r){
   	while(i<leftCount && j< rightCount) {
   		if(L[i]  < R[j]) A[k++] = L[i++];
   		else A[k++] = R[j++];
+      mergeSortInfo.comparisonNumber++;
+      mergeSortInfo.swapNumber++;
   	}
   	while(i < leftCount) A[k++] = L[i++];
   	while(j < rightCount) A[k++] = R[j++];
@@ -371,3 +241,192 @@ void quicksort(int *a, int p, int r){
           free(L);
           free(R);
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  void merge2(int *a, int p, int q, int r){
+    int n1 = q - p + 1, n2 = r - q, *ll, *rr, i, j, k;
+    ll = malloc((n1 + 1) * sizeof(int));
+    rr = malloc((n2 + 1) * sizeof(int));
+
+    for(i = 1; i <= n1; i++){
+      ll[i - 1] = a[p + i - 1];
+    }
+    for(i = 1; i <= n1; i++){
+        rr[i - 1] = a[q + i];
+    }
+    ll[n1] = INT_MAX;
+    rr[n2] = INT_MAX;
+
+    i = 0;
+    j = 0;
+
+    for(k = p; k <= r; k++){
+      if(ll[i] < rr[j]){
+        a[k] = ll[i];
+        i++;
+      }
+      else{
+        a[k] = rr[j];
+        j++;
+      }
+      mergeSortInfo.comparisonNumber++;
+      mergeSortInfo.swapNumber++;
+    }
+
+  }
+
+    void mergeSort2(int *a, int p, int r){
+      int q;
+      if(p < r){
+        q = (int)((p + r) / 2);
+      mergeSort2(a, p, q);
+      mergeSort2(a, q + 1, r);
+      merge2(a, p, q, r);
+    }
+  }
+
+  void quicksort2(int *a, int p, int r){
+    int q;
+    if(p < r){
+      q = partition(a, p, r);
+      quicksort(a, p, q - 1);
+      quicksort(a, q + 1, r);
+    }
+  }
+
+  int partition(int *a, int p, int r){
+    int x = a[r], i = p - 1, j, buffor;
+    for(j = p; j <= r - 1; j++){
+      quicksortInfo.comparisonNumber++;
+      if(a[j] <= x){
+        i = i + 1;
+        swap(a, i, j);
+        quicksortInfo.swapNumber += 2;
+      }
+    }
+    swap(a, i + 1, r);
+    quicksortInfo.swapNumber += 2;
+    return i + 1;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  void compareArrays(int *a, int *aa, int n){
+    int i;
+    for(i = 0; i < n; i++){
+      if(a[i] != aa[i]){
+        printf("NOT THE SAME !!!\n");
+        printf("NOT THE SAME !!!\n");
+        printf("NOT THE SAME !!!\n");
+        break;
+      }
+    }
+    printf("TABLES ARE THE SAME !!!\n" );
+    printf("TABLES ARE THE SAME !!!\n" );
+    printf("TABLES ARE THE SAME !!!\n" );
+  }
+
+  int *getRandomArray(int n, int range){
+    int *a, r, k, i;
+    a = malloc(n * sizeof(int));
+    srand(time(NULL));
+    for(i = 0; i < n; i++){
+      r = rand() % range;
+      k = rand() % 2;
+      if(k == 1){
+        r*=( -1);
+      }
+      a[i] = r;
+  }
+  return a;
+  }
+
+  int *getSortedArray(int n, int range){
+    int *a, i, j;
+    a = getRandomArray(n, range);
+    quicksort(a, 0, n - 1);
+    reverseArray(a, n);
+    quicksortInfo.comparisonNumber = 0;
+    quicksortInfo.swapNumber = 0;
+    return a;
+  }
+
+  void reverseArray(int *a, int n){
+    int i, j;
+    i = n - 1;
+    j = 0;
+    while(i > j){
+      swap(a, i, j);
+      i--;
+      j++;
+    }
+  }
+
+  void displayArray(int *a, int n){
+    int i;
+    printf("[");
+    for(i = 0; i < n; i++){
+      printf("%d", a[i]);
+      printf(",");
+    }
+    printf("]\n" );
+  }
+
+  int *copyArray(int *a, int n){
+    int *aa, i;
+    aa = malloc((n + 1) * sizeof(int));
+    for(i = 0; i < n; i++){
+      aa[i] = a[i];
+    }
+    return aa;
+  }
+
+void resetCounrers(){
+  insertionSortInfo.comparisonNumber = 0;
+  insertionSortInfo.swapNumber = 0;
+  mergeSortInfo.comparisonNumber = 0;
+  mergeSortInfo.swapNumber = 0;
+  quicksortInfo.comparisonNumber = 0;
+  quicksortInfo.swapNumber = 0;
+}
+
+double getInsertionSortTime(int *a, int n){
+  // aa = copyArray(a, i * 100 );
+  // start = clock();
+  // insertionSort(aa, i * 100);
+  // end = clock();
+  // seconds = (double)(end - start) / CLOCKS_PER_SEC;
+  // fprintf(fp, "%.10e,",seconds);
+  // // displayArray(a, i *100);
+  // free(aa);
+}
