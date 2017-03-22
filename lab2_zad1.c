@@ -20,6 +20,8 @@ void merge(int *A,int *L,int leftCount,int *R,int rightCount);
 void mergeSort(int *A,int n);
 void resetCounrers();
 double getInsertionSortTime(int *a, int n);
+double getMergesortTime(int *a, int n);
+double getQuicksortTime(int *a, int n);
 
 typedef struct Counter{
   int comparisonNumber;
@@ -76,30 +78,9 @@ for(i = 1; i <= foo; i++){
   }
 
   fprintf(fp, "%d,",i * 100);
-  aa = copyArray(a, i * 100 );
-  start = clock();
-  insertionSort(aa, i * 100);
-  end = clock();
-  seconds = (double)(end - start) / CLOCKS_PER_SEC;
-  fprintf(fp, "%.10e,",seconds);
-  // displayArray(a, i *100);
-  free(aa);
-  aa = copyArray(a, i * 100 );
-  start = clock();
-  // mergeSort2(a, 0, i * 100 - 1);
-  mergeSort(a, i * 100);
-  end = clock();
-  seconds = (double)(end - start) / CLOCKS_PER_SEC;
-  fprintf(fp, "%.10e,",seconds);
-  free(aa);
-  aa = copyArray(a, i * 100);
-  start = clock();
-  quicksort(a, 0, i * 100 -1);
-  // quicksort2(a, 0, i * 100 -1);
-  end = clock();
-  seconds = (double)(end - start) / CLOCKS_PER_SEC;
-  fprintf(fp, "%.10e\n",seconds);
-  free(aa);
+  fprintf(fp, "%.10e,",getInsertionSortTime(a, i * 100));
+  fprintf(fp, "%.10e,", getMergesortTime(a, i * 100));
+  fprintf(fp, "%.10e\n",getQuicksortTime(a, i * 100));
   free(a);
   insertionSortCounter[i - 1].comparisonNumber = insertionSortInfo.comparisonNumber;
   insertionSortCounter[i - 1].swapNumber = insertionSortInfo.swapNumber;
@@ -110,25 +91,18 @@ for(i = 1; i <= foo; i++){
   resetCounrers();
 }
 
-// start = clock();
-//   getNodeByValue(foo, &l1);
-//   end = clock();
-//   seconds = (double)(end - start) / CLOCKS_PER_SEC;
-//   printf("random acces: %.10e s\n",seconds );
-
 
 printf("\n\n" );
 
 // fp = fopen("test.csv", "w+");
 fprintf(fp, "Data size,Insertionsort comparison,Mergesort comparison,Quicksort comparison,     ,Data size,Insertionsort swap,Mergesort swap,Quicksort swap\n");
 for(i = 0; i < foo; i++){
-  // printf("%d %d\n", insertionSortCounter[i].comparisonNumber, insertionSortCounter[i].swapNumber);
-  // printf("%d %d\n", mergeSortCounter[i].comparisonNumber, mergeSortCounter[i].swapNumber);
-  // printf("%d %d\n", quicksortCounter[i].comparisonNumber, quicksortCounter[i].swapNumber);
   fprintf(fp, "%d,%d,%d,%d,    ,%d,%d,%d,%d\n", (i + 1) * 100, insertionSortCounter[i].comparisonNumber, mergeSortCounter[i].comparisonNumber, quicksortCounter[i].comparisonNumber, (i + 1) * 100, insertionSortCounter[i].swapNumber, mergeSortCounter[i].swapNumber, quicksortCounter[i].swapNumber);
-
 }
  fclose(fp);
+
+
+
 
 int naa = 10001;
  int *aaa1 = getRandomArray(naa, 123121);
@@ -137,8 +111,8 @@ int naa = 10001;
 
  insertionSort(aaa2, naa);
  // quicksort(aaa1, 0, naa - 1);
- // mergeSort(aaa1 ,naa);
- mergeSort2(aaa1, 0, naa - 1);
+ mergeSort(aaa1 ,naa);
+ // mergeSort2(aaa1, 0, naa - 1);
  compareArrays(aaa1, aaa2, naa);
 
 
@@ -177,69 +151,59 @@ void swap(int *A, int i, int j) {
 
 
 void quicksort(int *a, int p, int r){
-    int i = p,j = r, x, q = a[(p+r)/2];
+    int i = p, j = r, x, q = a[(p + r)/2];
     do{
       quicksortInfo.comparisonNumber++;
-    while (a[i]<q){
+    while (a[i] < q){
       i++;
       quicksortInfo.comparisonNumber++;
     }
     quicksortInfo.comparisonNumber++;
-    while (a[j]>q){
+    while (a[j] > q){
       quicksortInfo.comparisonNumber++;
       j--;
     }
-    if (i<=j){
+    if (i <= j){
       quicksortInfo.swapNumber += 2;
       swap(a, i, j);
       i++; j--;
     }
     }while (i<=j);
-    if (j>p) quicksort(a,p, j);
-    if (i<r) quicksort(a, i, r);
+    if (j > p) quicksort(a, p, j);
+    if (i < r) quicksort(a, i, r);
   }
 
 
 
-  void merge(int *A,int *L,int leftCount,int *R,int rightCount) {
+  void merge(int *a,int *p,int np,int *r,int rc) {
   	int i,j,k;
-
-  	// i - to mark the index of left aubarray (L)
-  	// j - to mark the index of right sub-raay (R)
-  	// k - to mark the index of merged subarray (A)
   	i = 0; j = 0; k =0;
 
-  	while(i<leftCount && j< rightCount) {
-  		if(L[i]  < R[j]) A[k++] = L[i++];
-  		else A[k++] = R[j++];
+  	while(i < np && j< rc) {
+  		if(p[i]  < r[j]) a[k++] = p[i++];
+  		else a[k++] = r[j++];
       mergeSortInfo.comparisonNumber++;
       mergeSortInfo.swapNumber++;
   	}
-  	while(i < leftCount) A[k++] = L[i++];
-  	while(j < rightCount) A[k++] = R[j++];
+  	while(i < np) a[k++] = p[i++];
+  	while(j < rc) a[k++] = r[j++];
   }
 
-  // Recursive function to sort an array of integers.
-  void mergeSort(int *A,int n) {
-  	int mid,i, *L, *R;
-  	if(n < 2) return; // base condition. If the array has less than two element, do nothing.
+  void mergeSort(int *a,int n) {
+  	int q,i, *p, *r;
+  	if(n < 2) return;
+  	q = n/2;
+  	p = (int*)malloc(q * sizeof(int));
+  	r = (int*)malloc((n - q) * sizeof(int));
 
-  	mid = n/2;  // find the mid index.
+  	for(i = 0;i < q; i++) p[i] = a[i];
+  	for(i = q;i < n; i++) r[i - q] = a[i];
 
-  	// create left and right subarrays
-  	// mid elements (from index 0 till mid-1) should be part of left sub-array
-  	// and (n-mid) elements (from mid to n-1) will be part of right sub-array
-  	L = (int*)malloc(mid*sizeof(int));
-  	R = (int*)malloc((n- mid)*sizeof(int));
-
-  	for(i = 0;i<mid;i++) L[i] = A[i]; // creating left subarray
-  	for(i = mid;i<n;i++) R[i-mid] = A[i]; // creating right subarray
-
-  	mergeSort(L,mid);  // sorting the left subarray
-  	mergeSort(R,n-mid);  // sorting the right subarray
-  	merge(A,L,mid,R,n-mid);  // Merging L and R into A as sorted list.
-          free(L);
-          free(R);
+  	mergeSort(p, q);
+  	mergeSort(r,n - q);
+  	merge(a, p, q, r, n - q);
+          free(p);
+          free(r);
   }
 
 
@@ -304,8 +268,8 @@ void quicksort(int *a, int p, int r){
     int q;
     if(p < r){
       q = partition(a, p, r);
-      quicksort(a, p, q - 1);
-      quicksort(a, q + 1, r);
+      quicksort2(a, p, q - 1);
+      quicksort2(a, q + 1, r);
     }
   }
 
@@ -421,12 +385,43 @@ void resetCounrers(){
 }
 
 double getInsertionSortTime(int *a, int n){
-  // aa = copyArray(a, i * 100 );
-  // start = clock();
-  // insertionSort(aa, i * 100);
-  // end = clock();
-  // seconds = (double)(end - start) / CLOCKS_PER_SEC;
-  // fprintf(fp, "%.10e,",seconds);
-  // // displayArray(a, i *100);
-  // free(aa);
+  clock_t start = clock();
+  clock_t end = clock();
+  int *aa;
+  double seconds;
+  aa = copyArray(a, n);
+  start = clock();
+  insertionSort(aa, n);
+  end = clock();
+  seconds = (double)(end - start) / CLOCKS_PER_SEC;
+  free(aa);
+  return seconds;
+}
+
+double getMergesortTime(int *a, int n){
+  clock_t start = clock();
+  clock_t end = clock();
+  int *aa;
+  double seconds;
+  aa = copyArray(a, n);
+  start = clock();
+  mergeSort(aa, n);
+  end = clock();
+  seconds = (double)(end - start) / CLOCKS_PER_SEC;
+  free(aa);
+  return seconds;
+}
+
+double getQuicksortTime(int *a, int n){
+  clock_t start = clock();
+  clock_t end = clock();
+  int *aa;
+  double seconds;
+  aa = copyArray(a, n);
+  start = clock();
+  quicksort(aa, 0, n - 1);
+  end = clock();
+  seconds = (double)(end - start) / CLOCKS_PER_SEC;
+  free(aa);
+  return seconds;
 }
