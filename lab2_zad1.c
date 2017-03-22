@@ -151,7 +151,7 @@ void swap(int *A, int i, int j) {
 
 
 void quicksort(int *a, int p, int r){
-    int i = p, j = r, x, q = a[(p + r)/2];
+    int i = p, j = r, x, q = a[(p + r) / 2];
     do{
       quicksortInfo.comparisonNumber++;
     while (a[i] < q){
