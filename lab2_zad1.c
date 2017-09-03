@@ -70,7 +70,6 @@ fp = fopen("test.csv", "w+");
 fprintf(fp, "Data size,Insertionsort time time,Mergesort time,Quicksort time,     ,\n");
 
 for(i = 1; i <= foo; i++){
-  printf("foo = %d\n",i );
   if(arrayType == '1'){
     a = getRandomArray(i * 100, range);
   }
@@ -105,16 +104,16 @@ for(i = 0; i < foo; i++){
 
 
 
-int naa = 10001;
- int *aaa1 = getRandomArray(naa, 123121);
- int *aaa2 = copyArray(aaa1, naa);
- int *aaa3 = copyArray(aaa1, naa);
-
- insertionSort(aaa2, naa);
- // quicksort(aaa1, 0, naa - 1);
- mergeSort(aaa1 , 0, naa - 1);
- // mergeSort2(aaa1, 0, naa - 1);
- compareArrays(aaa1, aaa2, naa);
+// int naa = 10001;
+//  int *aaa1 = getRandomArray(naa, 123121);
+//  int *aaa2 = copyArray(aaa1, naa);
+//  int *aaa3 = copyArray(aaa1, naa);
+//
+//  insertionSort(aaa2, naa);
+//  // quicksort(aaa1, 0, naa - 1);
+//  mergeSort(aaa1 , 0, naa - 1);
+//  // mergeSort2(aaa1, 0, naa - 1);
+//  compareArrays(aaa1, aaa2, naa);
 
 
 // displayArray(aaa, 100);
@@ -128,20 +127,25 @@ int naa = 10001;
 }
 
 int *insertionSort(int *a, int n){
+  // printf("Start insertionSort algorithm\n" );
   int j, i, key;
   for(j = 1; j < n; j++){
+    printf("Store key = %d\n",a[j] );
     key = a[j];
     i = j - 1;
     insertionSortInfo.comparisonNumber++;
+    printf("Move key to the left until it will be on the right place\n" );
     while((i >= 0) && (a[i] > key)){
       a[i + 1] = a[i];
       i--;
       insertionSortInfo.comparisonNumber++;
       insertionSortInfo.swapNumber++;
     }
+    printf("Store key value a[%d] = %d\n",i + 1, key );
     a[i + 1] = key;
     insertionSortInfo.swapNumber++;
   }
+  printf("End insertionSort algorithm\n" );
     return a;
 }
 
@@ -156,22 +160,31 @@ void quicksort(int *a, int p, int r){
     do{
       quicksortInfo.comparisonNumber++;
     while (a[i] < q){
+      // printf("Move left array index one position to the right\n");
       i++;
       quicksortInfo.comparisonNumber++;
     }
     quicksortInfo.comparisonNumber++;
     while (a[j] > q){
+      // printf("Move right array index one position to the left\n");
       quicksortInfo.comparisonNumber++;
       j--;
     }
     if (i <= j){
+      // printf("Swap a[%d] = %d and a[%d] = %d\n",i, a[i], j, a[j] );
       quicksortInfo.swapNumber += 2;
       swap(a, i, j);
       i++; j--;
     }
     }while (i<=j);
-    if (j > p) quicksort(a, p, j);
-    if (i < r) quicksort(a, i, r);
+    if (j > p){
+      // printf("Call quicksort(array, %d, %d)\n", p, j);
+      quicksort(a, p, j);
+    }
+    if (i < r){
+      // printf("Call quicksort(array, %d, %d)\n", i, r);
+      quicksort(a, i, r);
+    }
   }
 
   void merge(int *a, int p, int q, int r){
@@ -179,13 +192,16 @@ void quicksort(int *a, int p, int r){
     ll = malloc((n1) * sizeof(int));
     rr = malloc((n2) * sizeof(int));
 
+    // printf("Create first sub-array\n" );
     for(i = 0; i < n1; i++){
       ll[i] = a[p + i];
     }
+    // printf("Create second sub-array\n" );
     for(i = 0; i < n2; i++){
         rr[i] = a[q + i + 1];
     }
     i = 0; j = 0;k = p;
+    // printf("Merge 2 sorted arrays\n" );
     while(i < n1 && j < n2) {
       if(ll[i]  < rr[j]) a[k++] = ll[i++];
       else a[k++] = rr[j++];
@@ -207,9 +223,12 @@ void quicksort(int *a, int p, int r){
     void mergeSort(int *a, int p, int r){
       int q;
       if(p < r){
-        q = (int)((p + r) / 2);
+      q = (int)((p + r) / 2);
+      // printf("Call mergeSort(array, %d, %d)\n",p, q );
       mergeSort(a, p, q);
+      // printf("Call mergeSort(array, %d, %d)\n",q + 1, r );
       mergeSort(a, q + 1, r);
+      // printf("Call merge(array, %d, %d, %d)\n",p, q, r );
       merge(a, p, q, r);
     }
   }

@@ -107,17 +107,17 @@ for(i = 0; i < foo; i++){
 
 
 
-int naa = 10001;
- int *aaa1 = getRandomArray(naa, 123121);
- int *aaa2 = copyArray(aaa1, naa);
- int *aaa3 = copyArray(aaa1, naa);
-
- insertionSort(aaa2, naa);
- // quicksort(aaa1, 0, naa - 1);
- // mergeSort(aaa1 ,naa);
- mergeSort(aaa1, 0, naa - 1);
- compareArrays(aaa1, aaa2, naa);
-
+// int naa = 10001;
+//  int *aaa1 = getRandomArray(naa, 123121);
+//  int *aaa2 = copyArray(aaa1, naa);
+//  int *aaa3 = copyArray(aaa1, naa);
+//
+//  insertionSort(aaa2, naa);
+//  // quicksort(aaa1, 0, naa - 1);
+//  // mergeSort(aaa1 ,naa);
+//  mergeSort(aaa1, 0, naa - 1);
+//  compareArrays(aaa1, aaa2, naa);
+//
 
 // displayArray(aaa, 100);
 
